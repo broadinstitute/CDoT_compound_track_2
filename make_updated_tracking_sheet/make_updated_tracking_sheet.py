@@ -11,6 +11,11 @@ import os
 import pandas as pd
 import numpy as np
 
+# Import logging package
+# Configure logger
+import logging
+logging.basicConfig(level=logging.INFO)
+
 
 # Get the users home directory
 if platform.system() == "Windows":
@@ -38,15 +43,44 @@ def main(tracking_file, save_file):
     
     """
     try:
-        get_data(tracking_file=tracking_file)
-    except Exception as e:
+        logging.info('Reading in original tracking file...')
+        df_ori_tracking = get_data(tracking_file=tracking_file)
+    except Exception:
         raise RuntimeError('Issue reading in tracking file. Make sure the file is saved as a .csv file and try again.')
+
+    # Clean up the original tracking file
+    df_ori_tracking_cleaned = df_ori_tracking.copy()
+    df_pivoted_tracking = df_ori_tracking_cleaned.copy()
+
+    # Save the output file to an Excel workbook
+    try:
+        logging.info('Saving file to Excel workbook...')
+        save_output(df_1=df_ori_tracking_cleaned, df_2=df_pivoted_tracking, save_file=save_file)
+    except Exception:
+        raise RuntimeError('Saving the output file.')
 
 
 def get_data(tracking_file):
     """
     Method that does the work of reading in the original tacking file data into a DataFrame.
 
-    :param tracking_file: Method that does the work of reading in the original tacking file into a DataFrame
+    :param tracking_file: Path to the tracking_file
     """
     return pd.read_csv(tracking_file)
+
+
+def save_output(df_1, df_2, save_file):
+    """
+    Method that does the work of saving the output to an Excel file.
+
+    :param df_1: Original updated tracking sheet to save in one tab of an excel file
+    :param df_2: Pivoted tracking sheet where each row has a unique BRD. Save to another tab.
+    :param save_file: Path and name of the saved file.
+
+    """
+
+    with pd.ExcelWriter(save_file) as writer:
+        df_1.to_excel(writer, sheet_name='Updated_Tracking')
+        df_2.to_excel(writer, sheet_name='Pivoted_Tracking')
+
+

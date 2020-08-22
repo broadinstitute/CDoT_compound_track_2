@@ -37,8 +37,15 @@ def main(arg_1, arg_2, flag):
     7. Save the updated non-pivoted table and pivoted table to an Excel file.
     
     """
+    try:
 
 
+        df_ori_track_sheet = pd.read_csv(path)
 
+    except Exception:
+        pass
+
+
+def get_data(file):
 
     pass

@@ -7,9 +7,8 @@ import click
 
 # Using click to manage the command line interface
 @click.command()
-@click.option('--option_1', prompt="Replace with your prompt here", type=click.Path(exists=True),
-              help="Replace with help menu text")
-@click.option('--option_2', prompt="Replace your prompt for this option here" ,help="Replace with help menu text")
-@click.option('--change_this_flag_name', is_flag=True, help="Replace with help menu text")
-def main(option_1, option_2, change_this_flag_name):
-    main(arg_1=option_1, arg_2=option_2, change_this_flag_name=change_this_flag_name)
+@click.option('--tracking_file', prompt="Please paste the path of the original"
+                                        " compound tracking sheet saved as a .csv file", type=click.Path(exists=True))
+@click.option('--save_file', prompt="Please type the name of the updated tracking file NO .xlsx extension NEEDED")
+def main(tracking_file, save_file):
+    main(tracking_file=tracking_file, save_file=save_file)

@@ -21,12 +21,12 @@ else:
     homedir = os.environ['HOME']
 
 
-def main(arg_1, arg_2, flag):
+def main(tracking_file, save_file):
     """
     Main method for script...
     """
 
-    """"
+    """
     1. Ask user to paste the path of the Google spreadsheet
     2. Read in the csv file.
     3. Make a connection to resultsdb
@@ -38,14 +38,15 @@ def main(arg_1, arg_2, flag):
     
     """
     try:
+        get_data(tracking_file=tracking_file)
+    except Exception as e:
+        raise RuntimeError('Issue reading in tracking file. Make sure the file is saved as a .csv file and try again.')
 
 
-        df_ori_track_sheet = pd.read_csv(path)
+def get_data(tracking_file):
+    """
+    Method that does the work of reading in the original tacking file data into a DataFrame.
 
-    except Exception:
-        pass
-
-
-def get_data(file):
-
-    pass
+    :param tracking_file: Method that does the work of reading in the original tacking file into a DataFrame
+    """
+    return pd.read_csv(tracking_file)

@@ -17,6 +17,9 @@ from make_updated_tracking_sheet.cli import run_main
 # Import modules under test
 from make_updated_tracking_sheet.make_updated_tracking_sheet import get_data
 
+# Load environmental variables
+from dotenv import load_dotenv
+
 class TestInvokeCLI(TestCase):
     """Class for testing the invocation of the 'make_updated_tracking_sheet' on the command line"""
 
@@ -24,6 +27,9 @@ class TestInvokeCLI(TestCase):
     @patch('pandas.DataFrame.to_excel')
     def test_CLI(self, mock_1, mock_2):
         """Test invocation of the 'make_updated_tracking_sheet' script"""
+
+        # Load environmental vars
+        load_dotenv()
 
         # Use the click CliRunner object for testing Click implemented Cli programs.
         runner = CliRunner()

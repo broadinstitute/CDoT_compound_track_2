@@ -13,7 +13,9 @@ setuptools-scm = "*"
 pandas = "*"
 numpy = "*"
 python-dotenv = "*"
-
+sqlalchemy = "*"
+cx-oracle = "*"
+cryptography = "*"
 
 [requires]
 python_version = "3.7"

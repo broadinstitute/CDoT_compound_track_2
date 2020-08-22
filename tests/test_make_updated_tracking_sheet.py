@@ -25,8 +25,7 @@ class test_Cli(TestCase):
 
         # Use the click CliRunner object for testing Click implemented Cli programs.
         runner = CliRunner()
-        result = runner.invoke(run_main, ['--tracking_file', './tests/fixtures/compound shipment tracking - '
-                                                            'Tracking.csv',
+        result = runner.invoke(run_main, ['--tracking_file', './tests/fixtures/compound_shipment_tracking_Tracking.csv',
                                       '--save_file','Test.xlsx'])
 
         self.assertEqual(0, result.exit_code)

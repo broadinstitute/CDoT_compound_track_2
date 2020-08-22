@@ -12,19 +12,22 @@ import numpy as np
 from click.testing import CliRunner
 
 # Import the main method of the script for the command line interface entry point.
-from make_updated_tracking_sheet.cli import main
+from make_updated_tracking_sheet.cli import run_main
 
 
 class test_Cli(TestCase):
     """Class for testing the invocation of the 'make_updated_tracking_sheet' on the command line"""
 
-    def test_Cli_somthing(self):
+    @patch('pandas.ExcelWriter')
+    @patch('pandas.DataFrame.to_excel')
+    def test_Cli_something(self, mock_1, mock_2):
         """Test invocation of the 'make_updated_tracking_sheet' script"""
 
         # Use the click CliRunner object for testing Click implemented Cli programs.
         runner = CliRunner()
-        result = runner.invoke(main, ['--option_1', 'EXAMPLE_path_to_fixture_', 'option_2',
-                                                        'input_2'])
+        result = runner.invoke(run_main, ['--tracking_file', './tests/fixtures/compound shipment tracking - '
+                                                            'Tracking.csv',
+                                      '--save_file','Test.xlsx'])
 
         self.assertEqual(0, result.exit_code)
 

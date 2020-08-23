@@ -16,6 +16,7 @@ python-dotenv = "*"
 sqlalchemy = "*"
 cx-oracle = "*"
 cryptography = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.7"

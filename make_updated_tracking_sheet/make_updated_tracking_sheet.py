@@ -60,33 +60,45 @@ def main(tracking_file, save_file):
     # Get all SPR data from Dotmatics
     logging.info('Attempting to download spr results from database...')
     df_spr_dot_data = get_dot_data()
+    df_spr_dot_data['DATE'] = df_spr_dot_data['DATE'].apply(lambda x: x.replace('_', '-'))
+    
+    # Drop all duplicate repeats except for the most recent
+    df_spr_dot_data = df_spr_dot_data.sort_values(by=['BROAD_ID', 'DATE'])
+    df_spr_dot_data = df_spr_dot_data.drop_duplicates(subset=['BROAD_ID'], keep='last')
+    df_spr_dot_data = df_spr_dot_data.reset_index(drop=True)
 
     # Split the database results into two DataFrames by OPERATOR
     df_spr_data_dot_viva = df_spr_dot_data[df_spr_dot_data['OPERATOR'] == 'Viva_Biotech'].copy()
+    df_spr_data_dot_viva = df_spr_data_dot_viva.reset_index(drop=True)
     df_spr_dot_data_not_viva = df_spr_dot_data[df_spr_dot_data['OPERATOR'] != 'Viva_Biotech'].copy()
+    df_spr_dot_data_not_viva = df_spr_dot_data_not_viva.reset_index(drop=True)
 
     # For Viva data update the Date run field
     df_spr_data_dot_viva = df_spr_data_dot_viva[['BROAD_ID', 'DATE']]
     df_merge_tracking = pd.merge(left=df_ori_tracking, right=df_spr_data_dot_viva,
                                  left_on='BRD', right_on='BROAD_ID', how='left')
-    df_merge_tracking.reset_index(drop=True)
+    df_merge_tracking = df_merge_tracking.reset_index(drop=True)
     df_merge_tracking['DATE_RUN_VIVA'] = df_merge_tracking['DATE']
-    time_series = pd.to_datetime(arg=df_merge_tracking['DATE_RUN_VIVA'], format='%Y_%m_%d', errors='ignore')
-    df_merge_tracking['DATE_RUN_VIVA'] = time_series
+
+    # TODO: Format as time series
+    # time_series = pd.to_datetime(arg=df_merge_tracking['DATE_RUN_VIVA'], format='%Y_%m_%d', errors='ignore')
+    # df_merge_tracking['DATE_RUN_VIVA'] = time_series
     df_merge_tracking = df_merge_tracking.drop(columns=['BROAD_ID', 'DATE'])
 
     # For Broad data update the Date run field
     df_spr_dot_data_not_viva = df_spr_dot_data_not_viva[['BROAD_ID', 'DATE']]
     df_merge_tracking = pd.merge(left=df_merge_tracking, right=df_spr_dot_data_not_viva,
                                  left_on='BRD', right_on='BROAD_ID', how='left')
-    df_merge_tracking.reset_index(drop=True)
+    df_merge_tracking = df_merge_tracking.reset_index(drop=True)
     df_merge_tracking['DATE_RUN_BROAD'] = df_merge_tracking['DATE']
-    time_series = pd.to_datetime(arg=df_merge_tracking['DATE_RUN_BROAD'], format='%Y_%m_%d', errors='ignore')
-    df_merge_tracking['DATE_RUN_BROAD'] = time_series
+
+    # TODO: Format as time series
+    # time_series = pd.to_datetime(arg=df_merge_tracking['DATE_RUN_BROAD'], format='%Y_%m_%d', errors='ignore')
+    # df_merge_tracking['DATE_RUN_BROAD'] = time_series
     df_merge_tracking = df_merge_tracking.drop(columns=['BROAD_ID', 'DATE'])
 
     # Pivot the final results of the tracking sheet so that a Broad ID is a unique identifier
-    df_pivoted_tracking = df_merge_tracking.pivot_table(data=df_merge_tracking, index=['BRD'], columns=['FROM', 'TO'],
+    df_pivoted_tracking = pd.pivot_table(data=df_merge_tracking, index=['BRD'], columns=['FROM', 'TO'],
                                                         aggfunc=lambda x: ' '.join(str(v) for v in x))
 
     # Save the output file to an Excel workbook

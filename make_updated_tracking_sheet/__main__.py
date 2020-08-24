@@ -1,4 +1,4 @@
-from make_updated_tracking_sheet.cli import main
+from make_updated_tracking_sheet.cli import run_main
 
 
 if __name__ == '__main__':
@@ -6,4 +6,4 @@ if __name__ == '__main__':
     # Load environmental variables
     from dotenv import load_dotenv
     load_dotenv()
-    main()
+    run_main()

@@ -14,15 +14,14 @@ from click.testing import CliRunner
 # Import the main method of the script for the command line interface entry point.
 from make_updated_tracking_sheet.cli import run_main
 
-# Import modules under test
-from make_updated_tracking_sheet.make_updated_tracking_sheet import get_data
-
 # Load environmental variables
 from dotenv import load_dotenv
+
 
 class TestInvokeCLI(TestCase):
     """Class for testing the invocation of the 'make_updated_tracking_sheet' on the command line"""
 
+    @patch('track_compounds_run.google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
     def test_CLI(self, mock_1, mock_2):
@@ -33,8 +32,7 @@ class TestInvokeCLI(TestCase):
 
         # Use the click CliRunner object for testing Click implemented Cli programs.
         runner = CliRunner()
-        result = runner.invoke(run_main, ['--tracking_file', './tests/fixtures/compound_shipment_tracking_Tracking.csv',
-                                      '--save_file','Test.xlsx'])
+        result = runner.invoke(run_main, '--save_file','Test.xlsx')
 
         self.assertEqual(0, result.exit_code)
 

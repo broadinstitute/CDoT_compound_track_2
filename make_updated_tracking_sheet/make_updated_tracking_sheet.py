@@ -3,25 +3,25 @@
 # Import the version of the script that can be used to tag the output file.
 from _version import __version__
 
+# Import module for downloading Google sheet data.
+from google_sheet_data import get_gsheet_data
+
+# Import packages needed to query Oracle database.
+import cx_Oracle
+import sqlalchemy
+import crypt
+
 # Import system packages for determining what OS the script is running on..
 import platform
 import os
 
 # Import data wrangling Python packages
 import pandas as pd
-import numpy as np
 
 # Import logging package
 # Configure logger
 import logging
 logging.basicConfig(level=logging.INFO)
-
-# Import packages needed to query Oracle database.
-import cx_Oracle
-import sqlalchemy
-from sqlalchemy import and_
-import crypt
-
 
 # Get the users home directory
 if platform.system() == "Windows":
@@ -32,7 +32,7 @@ else:
     homedir = os.environ['HOME']
 
 
-def main(tracking_file, save_file):
+def main(save_file):
     """
     Main method for script...
     """
@@ -51,7 +51,7 @@ def main(tracking_file, save_file):
     """
     try:
         logging.info('Reading in original tracking file...')
-        df_ori_tracking = get_data(tracking_file=tracking_file)
+        df_ori_tracking = get_gsheet_data()
     except Exception:
         raise RuntimeError('Issue reading in tracking file. Make sure the file is saved as a .csv file and try again.')
 
@@ -113,15 +113,6 @@ def main(tracking_file, save_file):
         save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, save_file=save_file)
     except Exception:
         raise RuntimeError('Saving the output file.')
-
-
-def get_data(tracking_file):
-    """
-    Method that does the work of reading in the original tacking file data into a DataFrame.
-
-    :param tracking_file: Path to the tracking_file
-    """
-    return pd.read_csv(tracking_file)
 
 
 def _connect(engine):

@@ -109,7 +109,7 @@ def main(save_file):
         logging.info('Saving file to Excel workbook...')
         save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, save_file=save_file)
     except Exception:
-        raise RuntimeError('Saving the output file.')
+        raise RuntimeError('Issue saving the output file.')
 
 
 def _connect(engine):

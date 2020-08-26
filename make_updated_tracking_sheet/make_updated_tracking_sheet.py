@@ -39,14 +39,13 @@ def main(save_file):
 
     """
     Algorithm
-    1. Ask user to paste the path of the Google spreadsheet
-    2. Read in the csv file.
-    3. Make a connection to resultsdb
-    4. Query the upload_spr_dose table for all KRAS compounds, run aganist G12D. select BRD, operator, and date_, 
+    1. Download all results for Google Sheet
+    2. Make a connection to resultsdb
+    3. Query the upload_spr_dose table for all KRAS compounds, run aganist G12D. select BRD, operator, and date_, 
     save to a new df
-    5. Use the new df to update the read in table
-    6. Create a new DataFrame by pivoting the updated table on BROAD ID
-    7. Save the updated non-pivoted table and pivoted table to an Excel file.
+    4. Use the new df to update the read in table
+    5. Create a new DataFrame by pivoting the updated table on BROAD ID
+    6. Save the updated non-pivoted table and pivoted table to an Excel file.
     
     """
     try:
@@ -203,7 +202,6 @@ def save_output(df_1, df_2, save_file):
     :param save_file: Path and name of the saved file.
 
     """
-    # ADLP save file path
     # Note the version is saved to the file name so that data can be linked to the script version.
     logging.info('Saving results to Excel workbook...')
     save_file = save_file.replace('.xlsx', '')
@@ -216,12 +214,4 @@ def save_output(df_1, df_2, save_file):
         df_2.to_excel(writer, sheet_name='Pivoted_Tracking')
 
     print('Program done!! Result file is on the Desktop')
-
-
-if __name__ == '__main__':
-
-    # Load environmental variables
-    from dotenv import load_dotenv
-    load_dotenv()
-    main('test_file')
 

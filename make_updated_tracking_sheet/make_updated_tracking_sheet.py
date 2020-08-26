@@ -34,20 +34,18 @@ else:
 
 def main(save_file):
     """
-    Main method for script...
+    Main method that does the following work...
+
+    Algorithm
+    1. Downloads all results for Google Sheet
+    2. Makes a connection to resultsdb
+    3. Query's the upload_spr_dose table for all KRAS compounds, run aganist G12D. select BRD, operator, and date_,
+    save to a new df
+    4. Uses the new df to update the read in table
+    5. Creates a new DataFrame by pivoting the updated table on BROAD ID
+    6. Saves the updated non-pivoted table and pivoted table to an Excel file.
     """
 
-    """
-    Algorithm
-    1. Download all results for Google Sheet
-    2. Make a connection to resultsdb
-    3. Query the upload_spr_dose table for all KRAS compounds, run aganist G12D. select BRD, operator, and date_, 
-    save to a new df
-    4. Use the new df to update the read in table
-    5. Create a new DataFrame by pivoting the updated table on BROAD ID
-    6. Save the updated non-pivoted table and pivoted table to an Excel file.
-    
-    """
     try:
         logging.info('Reading in original tracking file...')
         df_ori_tracking = get_gsheet_data()

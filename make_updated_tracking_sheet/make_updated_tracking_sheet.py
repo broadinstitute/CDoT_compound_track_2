@@ -104,10 +104,13 @@ def main(save_file):
     # Replace nan with empty string
     df_pivoted_tracking = df_pivoted_tracking.replace('nan', '', regex=True)
 
+    # Get all the compounds that were received with no data
+    df_cmpds_no_data = get_cmpds_no_data()
+
     # Save the output file to an Excel workbook
     try:
         logging.info('Saving file to Excel workbook...')
-        save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, save_file=save_file)
+        save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, df_3=df_cmpds_no_data, save_file=save_file)
     except Exception:
         raise RuntimeError('Issue saving the output file.')
 
@@ -161,7 +164,7 @@ def get_dot_data():
         conn = _connect(engine=engine)
 
     except Exception:
-        raise ConnectionError("\nCannot connect to resultsdb database. Make sure you are on the interal network and "
+        raise ConnectionError("\nCannot connect to resultsdb database. Make sure you are on the internal network and "
                               "try again.")
 
     # Reflect Tables
@@ -191,12 +194,41 @@ def get_dot_data():
     return df
 
 
-def save_output(df_1, df_2, save_file):
+def get_cmpds_no_data(df):
+    """
+    Method that finds the compounds received at Broad or Viva with no data in database.
+
+    :param df: Tracking sheet updated with dates the compounds were run as a DataFrame
+    """
+
+    # Filter out compounds not going to the Broad or Viva
+    df = df[(df['TO'] == 'Broad') and df['TO'] == 'Viva']
+
+    # Find compounds received at Broad but not run.
+    df_broad = df[df['TO'] == 'Broad'].copy()
+    df_broad = df_broad.dropna(subset=['DATE_RECEIVED'])
+    df_broad = df_broad[df_broad['DATE_RUN_BROAD'].isnull()]
+    ls_broad = list(set(df_broad['BRD']))
+
+    # Find compounds received at Viva but not run.
+    df_viva = df[df['TO'] == 'Viva'].copy()
+    df_viva = df_viva.dropna(subset=['DATE_RECEIVED'])
+    df_viva = df_viva[df_viva['DATE_RUN_VIVA'].isnull()]
+    ls_viva = list(set(df_viva['BRD']))
+
+    # Turn results into a DataFrame
+    df_cmpds_no_data = pd.DataFrame({'Broad': ls_broad, 'Viva': ls_viva})
+
+    return df_cmpds_no_data
+
+
+def save_output(df_1, df_2, df_3, save_file):
     """
     Method that does the work of saving the output to an Excel file.
 
     :param df_1: Original updated tracking sheet to save in one tab of an excel file
     :param df_2: Pivoted tracking sheet where each row has a unique BRD. Save to another tab.
+    :param df_3: DataFrame containing compounds received by Broad and Viva but not run.
     :param save_file: Path and name of the saved file.
 
     """
@@ -210,6 +242,7 @@ def save_output(df_1, df_2, save_file):
     with pd.ExcelWriter(save_file) as writer:
         df_1.to_excel(writer, sheet_name='Updated_Tracking')
         df_2.to_excel(writer, sheet_name='Pivoted_Tracking')
+        df_3.to_excel(writer, sheet_name='Cmpds_Received_no_Data')
 
-    print('Program done!! Result file is on the Desktop')
+    print('Program done!! Result file is on the Dessktop')
 

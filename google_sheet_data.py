@@ -14,8 +14,8 @@ RANGE_NAME = 'Tracking!A:J'
 
 
 def get_gsheet_data():
-    """Shows basic usage of the Sheets API.
-    Prints values from a sample spreadsheet.
+    """
+    Get's all of the data in the specified Google Sheet.
     """
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is

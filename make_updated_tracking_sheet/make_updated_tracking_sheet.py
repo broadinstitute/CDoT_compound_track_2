@@ -53,7 +53,7 @@ def main(save_file):
         logging.info('Reading in original tracking file...')
         df_ori_tracking = get_gsheet_data()
     except Exception:
-        raise RuntimeError('Issue reading in tracking file. Make sure the file is saved as a .csv file and try again.')
+        raise RuntimeError('Issue reading in tracking file from Google Sheet.')
 
     # Clean up the original tracking file
     df_ori_tracking['BRD'] = df_ori_tracking['BRD'].apply(lambda x: x[:22])
@@ -217,4 +217,11 @@ def save_output(df_1, df_2, save_file):
 
     print('Program done!! Result file is on the Desktop')
 
+
+if __name__ == '__main__':
+
+    # Load environmental variables
+    from dotenv import load_dotenv
+    load_dotenv()
+    main('test_file')
 

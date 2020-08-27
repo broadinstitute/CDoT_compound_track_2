@@ -4,7 +4,7 @@
 from _version import __version__
 
 # Import module for downloading Google sheet data.
-from google_sheet_data import get_gsheet_data
+import google_sheet_data
 
 # Import packages needed to query Oracle database.
 import cx_Oracle
@@ -49,7 +49,7 @@ def main(save_file):
 
     try:
         logging.info('Reading in original tracking file...')
-        df_ori_tracking = get_gsheet_data()
+        df_ori_tracking = google_sheet_data.get_gsheet_data()
     except Exception:
         raise RuntimeError('Issue reading in tracking file from Google Sheet.')
 
@@ -59,6 +59,7 @@ def main(save_file):
     # Get all SPR data from Dotmatics
     logging.info('Attempting to download spr results from database...')
     df_spr_dot_data = get_dot_data()
+    df_spr_dot_data.to_csv('tests/fixtures/dotmatics_data_example.csv')
 
     # Clean the data column in Dotmatics as it is reparet is Y_m_d and we want Y-m-d
     df_spr_dot_data['DATE'] = df_spr_dot_data['DATE'].apply(lambda x: x.replace('_', '-'))
@@ -106,7 +107,7 @@ def main(save_file):
     df_pivoted_tracking = df_pivoted_tracking.replace('nan', '', regex=True)
 
     # Get all the compounds that were received with no data
-    df_cmpds_no_data = get_cmpds_no_data()
+    df_cmpds_no_data = get_cmpds_no_data(df=df_merge_tracking_cp)
 
     # Save the output file to an Excel workbook
     try:

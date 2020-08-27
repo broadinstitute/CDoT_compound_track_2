@@ -17,6 +17,7 @@ import os
 
 # Import data wrangling Python packages
 import pandas as pd
+import numpy as np
 
 # Import logging package
 # Configure logger
@@ -202,7 +203,7 @@ def get_cmpds_no_data(df):
     """
 
     # Filter out compounds not going to the Broad or Viva
-    df = df[(df['TO'] == 'Broad') and df['TO'] == 'Viva']
+    df = df[(df['TO'] == 'Broad') | (df['TO'] == 'Viva')]
 
     # Find compounds received at Broad but not run.
     df_broad = df[df['TO'] == 'Broad'].copy()
@@ -215,6 +216,12 @@ def get_cmpds_no_data(df):
     df_viva = df_viva.dropna(subset=['DATE_RECEIVED'])
     df_viva = df_viva[df_viva['DATE_RUN_VIVA'].isnull()]
     ls_viva = list(set(df_viva['BRD']))
+    
+    # Make the lists the same length as that is required to construct a DataFrame
+    if len(ls_broad) < len(ls_viva):
+        ls_broad.extend([np.nan] * (len(ls_viva) - len(ls_broad)))
+    if len(ls_viva) < len(ls_broad):
+        ls_viva.extend([np.nan] * (len(ls_broad) - len(ls_viva)))
 
     # Turn results into a DataFrame
     df_cmpds_no_data = pd.DataFrame({'Broad': ls_broad, 'Viva': ls_viva})

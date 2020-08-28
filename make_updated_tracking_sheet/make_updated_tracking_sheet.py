@@ -33,7 +33,7 @@ else:
     homedir = os.environ['HOME']
 
 
-def main(save_file):
+def main(file, save_file):
     """
     Main method that does the following work...
 
@@ -49,7 +49,11 @@ def main(save_file):
 
     try:
         logging.info('Reading in original tracking file...')
-        df_ori_tracking = google_sheet_data.get_gsheet_data()
+        if file:
+            t_file_path = input("Please paste the path of the tracking file as a .csv ")
+            df_ori_tracking = pd.read_csv(t_file_path)
+        else:
+            df_ori_tracking = google_sheet_data.get_gsheet_data()
     except Exception:
         raise RuntimeError('Issue reading in tracking file from Google Sheet.')
 
@@ -59,13 +63,12 @@ def main(save_file):
     # Get all SPR data from Dotmatics
     logging.info('Attempting to download spr results from database...')
     df_spr_dot_data = get_dot_data()
-    df_spr_dot_data.to_csv('tests/fixtures/dotmatics_data_example.csv')
 
     # Clean the data column in Dotmatics as it is reparet is Y_m_d and we want Y-m-d
     df_spr_dot_data['DATE'] = df_spr_dot_data['DATE'].apply(lambda x: x.replace('_', '-'))
     
     # Drop all duplicate repeats except for the most recent
-    df_spr_dot_data = df_spr_dot_data.sort_values(by=['BROAD_ID', 'DATE'])
+    df_spr_dot_data = df_spr_dot_data.sort_values(by=['BROAD_ID', 'COMPOUND_MW', 'DATE'])
     ## df_spr_dot_data = df_spr_dot_data.drop_duplicates(subset=['BROAD_ID'], keep='last')
     df_spr_dot_data = df_spr_dot_data.reset_index(drop=True)
 
@@ -76,7 +79,7 @@ def main(save_file):
     df_spr_dot_data_not_viva = df_spr_dot_data_not_viva.reset_index(drop=True)
 
     # For Viva data, update the `DATE_RUN_VIVA` field
-    df_spr_data_dot_viva = df_spr_data_dot_viva[['BROAD_ID', 'DATE']]
+    df_spr_data_dot_viva = df_spr_data_dot_viva[['BROAD_ID', 'COMPOUND_MW', 'DATE']]
     df_merge_tracking = pd.merge(left=df_ori_tracking, right=df_spr_data_dot_viva,
                                  left_on='BRD', right_on='BROAD_ID', how='left')
     df_merge_tracking = df_merge_tracking.reset_index(drop=True)
@@ -113,13 +116,13 @@ def main(save_file):
     try:
         logging.info('Saving file to Excel workbook...')
         save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, df_3=df_cmpds_no_data, save_file=save_file)
-        google_sheet_data.write_gsheet_data(df=df_cmpds_no_data)
+        if not file:
+            google_sheet_data.write_gsheet_data(df=df_cmpds_no_data)
     except Exception:
         raise RuntimeError('Issue saving the output file.')
 
     # Return df's for testing purposes
     return [df_merge_tracking_cp, df_pivoted_tracking, df_cmpds_no_data]
-
 
 
 def _connect(engine):
@@ -179,7 +182,7 @@ def get_dot_data():
     spr_data_tbl = sqlalchemy.Table('upload_spr_dose', metadata, autoload=True, autoload_with=engine)
 
     stmt = sqlalchemy.select([spr_data_tbl.c.broad_id, spr_data_tbl.c.project_code,
-                              spr_data_tbl.c.operator, spr_data_tbl.c.protein_id,
+                              spr_data_tbl.c.operator, spr_data_tbl.c.protein_id, spr_data_tbl.c.compound_mw,
                               spr_data_tbl.c.date_]).where(spr_data_tbl.c.project_code == 7279)
 
     # Execute the statement
@@ -189,7 +192,7 @@ def get_dot_data():
     df = pd.DataFrame(results)
 
     # Assign column names to the DataFrame
-    df.columns = ['BROAD_ID', 'PROJECT_CODE', 'OPERATOR', 'PROTEIN_ID', 'DATE']
+    df.columns = ['BROAD_ID', 'PROJECT_CODE', 'OPERATOR', 'PROTEIN_ID', 'COMPOUND_MW', 'DATE']
 
     # TODO: Issue where filtering by bip using sqlalchemy fails
     df = df[df['PROTEIN_ID'] == 'BIP-0384-01']
@@ -211,17 +214,25 @@ def get_cmpds_no_data(df):
     # Filter out compounds not going to the Broad or Viva
     df = df[(df['TO'] == 'Broad') | (df['TO'] == 'Viva')]
 
+    # Create master list of all compounds with no data.
+    df_all_not_run = df.dropna(subset=['DATE_RECEIVED']).copy()
+    df_all_not_run = df_all_not_run[(df_all_not_run['DATE_RUN_BROAD'].isnull()) &
+                                    (df_all_not_run['DATE_RUN_VIVA'].isnull())]
+    ls_not_run = set(df_all_not_run['BRD'])
+
     # Find compounds received at Broad but not run.
     df_broad = df[df['TO'] == 'Broad'].copy()
     df_broad = df_broad.dropna(subset=['DATE_RECEIVED'])
     df_broad = df_broad[df_broad['DATE_RUN_BROAD'].isnull()]
     ls_broad = list(set(df_broad['BRD']))
+    ls_broad = [i for i in ls_not_run if i in ls_broad]
 
     # Find compounds received at Viva but not run.
     df_viva = df[df['TO'] == 'Viva'].copy()
     df_viva = df_viva.dropna(subset=['DATE_RECEIVED'])
     df_viva = df_viva[df_viva['DATE_RUN_VIVA'].isnull()]
     ls_viva = list(set(df_viva['BRD']))
+    ls_viva = [i for i in ls_not_run if i in ls_viva]
     
     # Make the lists the same length as that is required to construct a DataFrame
     if len(ls_broad) < len(ls_viva):
@@ -257,5 +268,5 @@ def save_output(df_1, df_2, df_3, save_file):
         df_2.to_excel(writer, sheet_name='Pivoted_Tracking')
         df_3.to_excel(writer, sheet_name='Cmpds_Received_no_Data')
 
-    print('Program done!! Result file is on the Dessktop')
+    print('Program done!! Result file is on the Desktop')
 

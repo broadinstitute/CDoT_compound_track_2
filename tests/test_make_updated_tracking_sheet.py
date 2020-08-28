@@ -33,7 +33,7 @@ class TestInvokeCLI(TestCase):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv', sep=',')
         
         # Load environmental vars
         load_dotenv()
@@ -73,7 +73,7 @@ class TestMain(TestCase):
 
         expected_cols = ['BRD', 'FROM', 'TO', 'DATE_RUN_BROAD', 'DATE_RUN_VIVA', 'DATE_RECEIVED']
 
-        result = main(save_file=self.tracking_file_path)
+        result = main(file=False, save_file=self.tracking_file_path)
 
         for header in expected_cols:
             self.assertIn(header, result[0].columns)

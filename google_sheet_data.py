@@ -4,23 +4,22 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import pandas as pd
+import logging
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of the spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1XnC6bZ_iVB7KttuSGa2h8ZlUZx-VsTspwgPOTOxIbeA'
-RANGE_NAME = 'Tracking!A:J'
+SPREADSHEET_ID = '1XnC6bZ_iVB7KttuSGa2h8ZlUZx-VsTspwgPOTOxIbeA'
+READ_RANGE = 'Tracking!A:J'
+WRITE_RANGE = 'Compounds Received but Not Tested!A:B'
 
 
-def get_gsheet_data():
+def get_credentials():
     """
-    Get's all of the data in the specified Google Sheet.
+    Method that generates credentials for the API key that is used connect and download data from google sheets.
     """
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
@@ -36,14 +35,48 @@ def get_gsheet_data():
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
+    return creds
+
+def get_gsheet_data():
+    """
+    Get's all of the data in the specified Google Sheet.
+    """
+
+    creds = get_credentials()
     service = build('sheets', 'v4', credentials=creds)
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                range=RANGE_NAME).execute()
+    result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
+                                range=READ_RANGE).execute()
     data = result.get('values')
 
     # Turn data into a DataFrame
     df = pd.DataFrame(data[1:], columns=data[0])
     return df
+
+
+def write_gsheet_data(df):
+    """
+    Method that writes data to a google sheet
+
+    param: df: DataFrame to write.
+    param: sheet_id: Id of the Google Sheet to write.
+    """
+
+    # Get API credentials.
+    creds = get_credentials()
+    service = build('sheets', 'v4', credentials=creds)
+
+    response_date = service.spreadsheets().values().update(
+        spreadsheetId=SPREADSHEET_ID,
+        valueInputOption='RAW',
+        range=WRITE_RANGE,
+        body=dict(
+            majorDimension='ROWS',
+            values=df.T.reset_index().T.values.tolist())
+    ).execute()
+    logging.info('Values successfully written to Google Sheet')
+
+
+

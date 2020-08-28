@@ -109,10 +109,11 @@ def main(save_file):
     # Get all the compounds that were received with no data
     df_cmpds_no_data = get_cmpds_no_data(df=df_merge_tracking_cp)
 
-    # Save the output file to an Excel workbook
+    # Save the output file to an Excel workbook and Save compounds not tested to Google Sheet
     try:
         logging.info('Saving file to Excel workbook...')
         save_output(df_1=df_merge_tracking, df_2=df_pivoted_tracking, df_3=df_cmpds_no_data, save_file=save_file)
+        google_sheet_data.write_gsheet_data(df=df_cmpds_no_data)
     except Exception:
         raise RuntimeError('Issue saving the output file.')
 

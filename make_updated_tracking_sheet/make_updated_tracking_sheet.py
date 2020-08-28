@@ -116,6 +116,10 @@ def main(save_file):
     except Exception:
         raise RuntimeError('Issue saving the output file.')
 
+    # Return df's for testing purposes
+    return [df_merge_tracking_cp, df_pivoted_tracking, df_cmpds_no_data]
+
+
 
 def _connect(engine):
     """

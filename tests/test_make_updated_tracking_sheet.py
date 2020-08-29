@@ -27,11 +27,12 @@ from dotenv import load_dotenv
 class TestInvokeCLI(TestCase):
     """Class for testing the invocation of the 'make_updated_tracking_sheet' on the command line"""
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_CLI(self, mock_1, mock_2, mock_3, mock_4):
+    def test_CLI(self, mock_1, mock_2, mock_3, mock_4, mock_5):
         """Test invocation of the 'make_updated_tracking_sheet' script"""
 
         # Mock returns for getting G-Sheet Data and Database data
@@ -64,11 +65,12 @@ class TestMain(TestCase):
         cls.tracking_file = pd.read_csv(cls.tracking_file_path)
         cls.df_dot_data = pd.read_csv(cls.df_dot_data_path)
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_get_data_expected_cols(self, mock_1, mock_2, mock_3, mock_4):
+    def test_get_data_expected_cols(self, mock_1, mock_2, mock_3, mock_4, mock_5):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
@@ -81,11 +83,12 @@ class TestMain(TestCase):
         for header in expected_cols:
             self.assertIn(header, result[0].columns)
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_df_merge_tracking_brd_22_char(self, mock_1, mock_2, mock_3, mock_4):
+    def test_df_merge_tracking_brd_22_char(self, mock_1, mock_2, mock_3, mock_4, mock_5):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
@@ -97,11 +100,12 @@ class TestMain(TestCase):
         for brd in result[0]['BRD']:
             self.assertEqual(22, len(brd))
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_df_merge_tracking_data_format(self, mock_1, mock_2, mock_3, mock_4):
+    def test_df_merge_tracking_data_format(self, mock_1, mock_2, mock_3, mock_4, mock_5):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
@@ -115,11 +119,12 @@ class TestMain(TestCase):
                 continue
             self.assertNotEqual(None, re.match(r'\d{4}-\d{2}-\d{2}', date))
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_compounds_no_data_broad(self, mock_1, mock_2, mock_3, mock_4):
+    def test_compounds_no_data_broad(self, mock_1, mock_2, mock_3, mock_4, mock_5):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
@@ -142,11 +147,12 @@ class TestMain(TestCase):
         for brd in ls_broad:
             self.assertIn(brd, expected)
 
+    @patch('google_sheet_data.write_gsheet_data')
     @patch('make_updated_tracking_sheet.make_updated_tracking_sheet.get_dot_data')
     @patch('google_sheet_data.get_gsheet_data')
     @patch('pandas.ExcelWriter')
     @patch('pandas.DataFrame.to_excel')
-    def test_compounds_no_data_viva(self, mock_1, mock_2, mock_3, mock_4):
+    def test_compounds_no_data_viva(self, mock_1, mock_2, mock_3, mock_4, mock_5):
 
         # Mock returns for getting G-Sheet Data and Database data
         mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')

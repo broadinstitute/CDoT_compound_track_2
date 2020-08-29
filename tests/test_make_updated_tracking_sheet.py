@@ -35,8 +35,8 @@ class TestInvokeCLI(TestCase):
         """Test invocation of the 'make_updated_tracking_sheet' script"""
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv', sep=',')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv', sep=',')
         
         # Load environmental vars
         load_dotenv()
@@ -51,8 +51,8 @@ class TestInvokeCLI(TestCase):
 class TestMain(TestCase):
     """Class for testing the main method of the app"""
 
-    tracking_file_path = './tests/fixtures/compound_shipment_tracking_example.csv'
-    df_dot_data_path = './tests/fixtures/dotmatics_data_example.csv'
+    tracking_file_path = 'tests/fixtures/compound_shipment_tracking_example.csv'
+    df_dot_data_path = 'tests/fixtures/dotmatics_data_example.csv'
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -71,8 +71,8 @@ class TestMain(TestCase):
     def test_get_data_expected_cols(self, mock_1, mock_2, mock_3, mock_4):
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
 
         expected_cols = ['BRD', 'FROM', 'TO', 'DATE_RUN_BROAD', 'DATE_RUN_VIVA', 'DATE_RECEIVED']
 
@@ -88,8 +88,8 @@ class TestMain(TestCase):
     def test_df_merge_tracking_brd_22_char(self, mock_1, mock_2, mock_3, mock_4):
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
 
         # Call the main method under test.
         result = main(file=False, save_file=self.tracking_file_path)
@@ -104,8 +104,8 @@ class TestMain(TestCase):
     def test_df_merge_tracking_data_format(self, mock_1, mock_2, mock_3, mock_4):
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
 
         # Call the main method under test.
         result = main(file=False, save_file=self.tracking_file_path)
@@ -122,8 +122,8 @@ class TestMain(TestCase):
     def test_compounds_no_data_broad(self, mock_1, mock_2, mock_3, mock_4):
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
 
         # Call the main method under test.
         result = main(file=False, save_file=self.tracking_file_path)
@@ -149,8 +149,8 @@ class TestMain(TestCase):
     def test_compounds_no_data_viva(self, mock_1, mock_2, mock_3, mock_4):
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv')
+        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv')
 
         # Call the main method under test.
         result = main(file=False, save_file=self.tracking_file_path)

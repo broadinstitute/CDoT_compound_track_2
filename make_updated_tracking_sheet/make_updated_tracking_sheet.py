@@ -69,7 +69,6 @@ def main(file, save_file):
     
     # Drop all duplicate repeats except for the most recent
     df_spr_dot_data = df_spr_dot_data.sort_values(by=['BROAD_ID', 'COMPOUND_MW', 'DATE'])
-    ## df_spr_dot_data = df_spr_dot_data.drop_duplicates(subset=['BROAD_ID'], keep='last')
     df_spr_dot_data = df_spr_dot_data.reset_index(drop=True)
 
     # Split the database results into two DataFrames by OPERATOR

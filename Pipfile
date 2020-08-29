@@ -23,6 +23,7 @@ google-auth-oauthlib = "*"
 oauth2client = "==3.*"
 gspread = "*"
 pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.7"

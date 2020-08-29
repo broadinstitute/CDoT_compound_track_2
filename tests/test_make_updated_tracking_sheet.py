@@ -32,8 +32,8 @@ class TestInvokeCLI(TestCase):
         """Test invocation of the 'make_updated_tracking_sheet' script"""
 
         # Mock returns for getting G-Sheet Data and Database data
-        mock_3.return_value = pd.read_csv('tests/fixtures/compound_shipment_tracking_example.csv')
-        mock_4.return_value = pd.read_csv('tests/fixtures/dotmatics_data_example.csv', sep=',')
+        mock_3.return_value = pd.read_csv('./tests/fixtures/compound_shipment_tracking_example.csv')
+        mock_4.return_value = pd.read_csv('./tests/fixtures/dotmatics_data_example.csv', sep=',')
         
         # Load environmental vars
         load_dotenv()

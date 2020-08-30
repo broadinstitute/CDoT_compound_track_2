@@ -9,7 +9,7 @@ Requirements
 ------------
 __If using Mac OS 10.15 and greater:__
 
-*If you haven't installed `xcode`, `homebrew`, or `pipenv` please follow steps 1-3.*
+*If you haven't installed `xcode`, `homebrew`, or `pipenv` please follow steps 1-4.*
 
 1. Install `xcode` command line tools<br/>
 command line: `xcode-select --install`
@@ -17,7 +17,10 @@ command line: `xcode-select --install`
 2. Install `hombrew`<br/>
 command line: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-3. Install `pipenv`<br/>
+3. Install Python > 3.6 using Miniconda
+command line' `brew cask install miniconda`
+
+4. Install `pipenv`<br/>
 command line: `brew install pipenv`
 
 Usage
@@ -29,12 +32,12 @@ __Create and activate a virtual environment using Pipenv__ command line: `pipenv
 
 __Invoke CLI:__ `python -m make_updated_tracking_sheet`
 
-__Options:__ `python -m make_updated_tracking_sheet -f` will enable reading from a .csv file rather than directly from
- Google Sheets directly.  Google sheets will not be updated.
+__Options:__ `python -m make_updated_tracking_sheet -f` will enable reading from a .csv file rather than from
+ Google Sheets directly.  Google sheets will not be updated but an Exel file containig compounds without data will still be save to the destop..
 
 Google Sheet tab "__Compounds Received but not Tested__" will be updated.
 
-An Excel File with updated dates the compounds were run, a pivot table, and the above Google Sheet tab will be saved to
+An Excel File with updated dates that the compounds were run, a pivot table, and the above Google Sheet tab will be saved to
  the desktop.
  
 

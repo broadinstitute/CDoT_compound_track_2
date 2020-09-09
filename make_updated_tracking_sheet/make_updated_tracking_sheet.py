@@ -213,6 +213,9 @@ def get_cmpds_no_data(df):
     # Filter out compounds not going to the Broad or Viva
     df = df[(df['TO'] == 'Broad') | (df['TO'] == 'Viva')]
 
+    # Issue where some cells have spaces and those don't fill with nan.  Fill all empty cells with nan.
+    df = df.apply(lambda x: x.str.strip()).replace('', np.nan)
+
     # Create master list of all compounds with no data.
     df_all_not_run = df.dropna(subset=['DATE_RECEIVED']).copy()
     df_all_not_run = df_all_not_run[(df_all_not_run['DATE_RUN_BROAD'].isnull()) &

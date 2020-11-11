@@ -90,5 +90,7 @@ def write_gsheet_data(df):
 
     logging.info('Values successfully written to Google Sheet.')
 
+    print('Program done!! Result file is on the Desktop')
+
 
 

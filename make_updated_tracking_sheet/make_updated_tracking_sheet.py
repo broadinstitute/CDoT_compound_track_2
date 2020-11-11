@@ -162,6 +162,7 @@ def get_dot_data():
             password=password,
             sid=sid
         )
+        
 
         engine = sqlalchemy.create_engine(cstr,
                                           pool_recycle=3600,
@@ -201,6 +202,43 @@ def get_dot_data():
 
     # Turn the results into a DataFrame.
     return df
+
+
+def get_cmpds_received_not_run(df):
+    """
+    Method that finds any compounds received at Broad or Viva but not run.
+
+    :param df: Tracking sheet updated with dates the compounds were run as a DataFrame
+    """
+
+    # Filter out compounds not going to the Broad or Viva
+    df = df[(df['TO'] == 'Broad') | (df['TO'] == 'Viva')]
+
+    # Issue where some cells have spaces and those don't fill with nan.  Fill all empty cells with nan.
+    df = df.apply(lambda x: x.str.strip()).replace('', np.nan)
+
+    # Find compounds received at Broad but not run.
+    df_broad = df[df['TO'] == 'Broad'].copy()
+    df_broad = df_broad.dropna(subset=['DATE_RECEIVED'])
+    df_broad = df_broad[df_broad['DATE_RUN_BROAD'].isnull()]
+    ls_broad = list(set(df_broad['BRD']))
+
+    # Find compounds received at Viva but not run.
+    df_viva = df[df['TO'] == 'Viva'].copy()
+    df_viva = df_viva.dropna(subset=['DATE_RECEIVED'])
+    df_viva = df_viva[df_viva['DATE_RUN_VIVA'].isnull()]
+    ls_viva = list(set(df_viva['BRD']))
+
+    # Make the lists the same length as that is required to construct a DataFrame
+    if len(ls_broad) < len(ls_viva):
+        ls_broad.extend([np.nan] * (len(ls_viva) - len(ls_broad)))
+    if len(ls_viva) < len(ls_broad):
+        ls_viva.extend([np.nan] * (len(ls_broad) - len(ls_viva)))
+
+    # Turn results into a DataFrame
+    df_cmpds_not_run = pd.DataFrame({'Broad': ls_broad, 'Viva': ls_viva})
+
+    return df_cmpds_not_run
 
 
 def get_cmpds_no_data(df):
@@ -270,5 +308,5 @@ def save_output(df_1, df_2, df_3, save_file):
         df_2.to_excel(writer, sheet_name='Pivoted_Tracking')
         df_3.to_excel(writer, sheet_name='Cmpds_Received_no_Data')
 
-    print('Program done!! Result file is on the Desktop')
+
 

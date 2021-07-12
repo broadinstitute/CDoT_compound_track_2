@@ -24,7 +24,7 @@ command line' `brew cask install miniconda`
 
 5. Create a conda virtual environment by invoking the following command: `conda env create`.
 
-6. Activate the conca virtual environment before running the app: `conda activate CMPD_TRACKING`
+6. Activate the conda virtual environment before running the app: `conda activate CMPD_TRACKING`
 
 Usage
 -----

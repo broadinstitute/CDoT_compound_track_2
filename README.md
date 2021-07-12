@@ -19,16 +19,22 @@ command line: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/i
 
 3. Install Python > 3.6 using Miniconda
 command line' `brew cask install miniconda`
+   
+4. Clone the master branch of this repo locally.
 
-4. Install `pipenv`<br/>
-command line: `brew install pipenv`
+5. Create a conda virtual environment by invoking the following command: `conda env create`.
+
+6. Activate the conca virtual environment before running the app: `conda activate CMPD_TRACKING`
 
 Usage
 -----
 
 __Note:__ This app requires a Google API Key as well as a Broad Internal network connection.
 
-__Create and activate a virtual environment using Pipenv__ command line: `pipenv install --dev`<br/>
+__Note:__ This app requires an encrypted database password in a .env file.  The encripted password can be found on 
+the Broad internal server at the path below.  Copy this file into this repo.
+
+__/Iron/tdts_users/SPR to ADLP Python Script Overview__
 
 __Invoke CLI:__ `python -m make_updated_tracking_sheet`
 
